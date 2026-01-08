@@ -1,16 +1,4 @@
-# wildlife_dashboard
+Edge-AI powered wildlife health and reproductive intelligence — fully offline, fast, and scalable.
+WildSense-AI is an advanced, on-device machine learning system built with Flutter and TensorFlow Lite for real-time wildlife health, behavior, and reproductive state monitoring.
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The platform enables offline-first predictive analytics by processing physiological and environmental data directly on mobile devices, delivering instant insights without relying on cloud APIs. Designed for conservation, veterinary surveillance, and smart livestock management, WildSense-AI combines intelligent dashboards, robust ML models, and scalable architecture for modern wildlife ecosystems.
