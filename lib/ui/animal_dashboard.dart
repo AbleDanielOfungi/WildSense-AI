@@ -9,136 +9,99 @@ class AnimalDashboard extends StatefulWidget {
 }
 
 class _AnimalDashboardState extends State<AnimalDashboard> {
-  final WildlifeModel model = WildlifeModel();
+  final WildlifeModel wildlifeModel = WildlifeModel();
 
-  bool isLoaded = false;
-  String health = '--';
-  String reproductive = '--';
+  final Map<String, TextEditingController> controllers = {
+    'body_temperature': TextEditingController(),
+    'heart_rate': TextEditingController(),
+    'activity_level': TextEditingController(),
+    'feeding_frequency': TextEditingController(),
+    'respiration_rate': TextEditingController(),
+    'ambient_temperature': TextEditingController(),
+    'humidity': TextEditingController(),
+    'movement_speed': TextEditingController(),
+    'hour': TextEditingController(),
+    'temp_rolling_mean': TextEditingController(),
+    'activity_rolling_mean': TextEditingController(),
+  };
 
-  // Controllers for simulated IoT inputs
-  final controllers = List.generate(11, (_) => TextEditingController());
+  Map<String, String>? prediction;
 
   @override
   void initState() {
     super.initState();
-    model.load().then((_) {
-      setState(() => isLoaded = true);
-    });
+    wildlifeModel.load();
   }
 
-  void predict() {
-    final input = controllers
+  @override
+  void dispose() {
+    for (var c in controllers.values) c.dispose();
+    super.dispose();
+  }
+
+  void runPrediction() {
+    final input = controllers.values
         .map((c) => double.tryParse(c.text) ?? 0.0)
         .toList();
-
-    final result = model.predict(input);
-
-    setState(() {
-      health = result['health']!;
-      reproductive = result['reproductive']!;
-    });
+    final result = wildlifeModel.predict(input);
+    setState(() => prediction = result);
   }
 
-  Widget inputField(String label, int index) {
+  Widget buildTextField(String label) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: TextField(
-        controller: controllers[index],
+        controller: controllers[label],
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          labelText: label.replaceAll('_', ' ').toUpperCase(),
+          border: OutlineInputBorder(),
         ),
       ),
     );
   }
 
-  Color healthColor() {
-    switch (health) {
-      case 'Healthy':
-        return Colors.green;
-      case 'Sick':
-        return Colors.orange;
-      case 'Critical':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (!isLoaded) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Animal Health Dashboard')),
+      appBar: AppBar(title: const Text('Animal Dashboard')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            inputField('Body Temperature', 0),
-            inputField('Heart Rate', 1),
-            inputField('Activity Level', 2),
-            inputField('Feeding Frequency', 3),
-            inputField('Respiration Rate', 4),
-            inputField('Ambient Temperature', 5),
-            inputField('Humidity', 6),
-            inputField('Movement Speed', 7),
-            inputField('Hour of Day', 8),
-            inputField('Temp Rolling Mean', 9),
-            inputField('Activity Rolling Mean', 10),
-
-            const SizedBox(height: 16),
-
+            ...controllers.keys.map(buildTextField),
+            const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: predict,
-              child: const Text('Run AI Analysis'),
+              onPressed: runPrediction,
+              child: const Text('Predict Health & Reproductive State'),
             ),
-
-            const SizedBox(height: 24),
-
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Text(
-                      'Health Status',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      health,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: healthColor(),
+            const SizedBox(height: 20),
+            if (prediction != null)
+              Card(
+                color: Colors.green[50],
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Health State: ${prediction!['health']}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Reproductive State',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      reproductive,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueAccent,
+                      const SizedBox(height: 8),
+                      Text(
+                        'Reproductive State: ${prediction!['reproductive']}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
