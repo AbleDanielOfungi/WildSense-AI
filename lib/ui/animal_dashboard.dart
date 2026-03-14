@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../ml/wildlife_model.dart';
 
 class AnimalDashboard extends StatefulWidget {
-  const AnimalDashboard({super.key});
+  const AnimalDashboard({super.key, required animalId});
 
   @override
   State<AnimalDashboard> createState() => _AnimalDashboardState();
