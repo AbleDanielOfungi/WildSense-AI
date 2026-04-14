@@ -1,20 +1,35 @@
 import 'package:flutter/material.dart';
-import 'ui/animal_dashboard.dart';
+import 'db/app_database.dart';
+import 'ui/login_screen.dart';
 
-void main() {
-  runApp(const WildlifeApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize SQLite
+  await AppDatabase.instance.database;
+
+  runApp(const WildlifeHealthApp());
 }
 
-class WildlifeApp extends StatelessWidget {
-  const WildlifeApp({super.key});
+class WildlifeHealthApp extends StatelessWidget {
+  const WildlifeHealthApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Wildlife Health Monitor',
       debugShowCheckedModeBanner: false,
-      title: 'AI Wildlife Health',
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.green),
-      home: const AnimalDashboard(),
+
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.green,
+          brightness: Brightness.light,
+        ),
+      ),
+
+      // Start from login
+      home: const LoginScreen(),
     );
   }
 }
